@@ -40,7 +40,8 @@ class BlurbDataset:
         else:
             self.dataloaders, self.listLabelDict = self.loadData(tokenizedDataPath)
             self.isPreprocessed = True
-            self.num_labels = [len(dict) for dict in self.listLabelDict]        
+            self.num_labels = [len(dict) for dict in self.listLabelDict]   
+            # print(f"num_labels = {self.num_labels}")     
         
     def saveData(self) -> None:
         """
@@ -170,8 +171,9 @@ class BlurbDataset:
                 if len(encoded_row) < self.max_length:
                     encoded_row.extend([-1] * (self.max_length - len(encoded_row)))  # Padding with -1 for shorter lists
 
+                # Does not seem to be needed. Although, this change did not fix the RUntimeError: CUDA Error
                 # Add 1 to all labels to avoid 0 labels. This is needed for the loss function
-                encoded_topics.append(np.array(encoded_row)+1)
+                encoded_topics.append(np.array(encoded_row))
             
             df["labels"] = encoded_topics
                       
@@ -282,8 +284,8 @@ class BlurbDataset:
             print("Data already preprocessed.")
     
 class myDataLoader(DataLoader):
-    # Wrapper class for the DataLoader class. Needed to fix the __len__ function
-    # NOT NEEDED ANYMORE
+    # Wrapper class for the DataLoader class. Needed to fix the __len__ function. Fixed this issue by eleminiating bug in convertToDataloader function
+    # CURRENTLY NOT USED
     def __init__(self, tensorDataset:TensorDataset, **args):
         self.tensorDataset = tensorDataset
         super().__init__(self.tensorDataset, **args)

@@ -6,6 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import seaborn as sns
+import json
 
 # Bert library
 from transformers import BertForSequenceClassification, AdamW, get_linear_schedule_with_warmup
@@ -117,13 +118,13 @@ class BSC:
         # Predict 
         for step, batch in enumerate(self.dataloaders["test"]):
             # `batch` contains three pytorch tensors: [0]: input ids, [1]: attention masks, [2]: labels
-            b_labels = batch[2][:,self.hierarchyLevel].to(self.device)
+            b_labels = batch[2][:,self.hierarchyLevel]#.to(self.device)
             
             # Need to exclude the datapoints that are not labeled i.e. have a label of 0
-            b_input_ids = batch[0][b_labels!=0,:].to(self.device)
-            b_input_mask = batch[1][b_labels!=0,:].to(self.device)
+            b_input_ids = batch[0][b_labels!=-1,:].to(self.device)
+            b_input_mask = batch[1][b_labels!=-1,:].to(self.device)
             # Need to perform a type converion to long
-            b_labels = torch.tensor(b_labels[b_labels!=0],dtype=torch.long).to(self.device)
+            b_labels = torch.tensor(b_labels[b_labels!=-1],dtype=torch.long).to(self.device)
 
             # Forward pass, calculate logit predictions
             with torch.no_grad():
@@ -135,10 +136,10 @@ class BSC:
             self.testPredictioins.append(result.logits.detach().cpu().numpy())
             progress_bar.update(1)
             
-            if step % 10 == 0:
+            if (step % (len(self.dataloaders["test"])/10)) == 0:
                 print(f"Step: {step}/{len(self.dataloaders['test'])}")
-                print(f"True labels: {b_labels.detach().cpu().numpy()}")
-                print(f"Predictions: {np.argmax(result.logits.detach().cpu().numpy(), axis=1).flatten()}")
+                print(f"True labels: {b_labels.detach().cpu().numpy()} and the decoded true labels: {self.translatePredictions(b_labels.detach().cpu().numpy())}")
+                print(f"Predictions: {np.argmax(result.logits.detach().cpu().numpy(), axis=1).flatten()} and the decoded predicted labels {self.translatePredictions(np.argmax(result.logits.detach().cpu().numpy(), axis=1).flatten())}")
             
         # Finalize predictions
         progress_bar.close()  
@@ -172,14 +173,14 @@ class BSC:
 
             for batch in self.dataloaders["train"]:
                 # `batch` contains three pytorch tensors: [0]: input ids, [1]: attention masks, [2]: labels
-                b_labels = batch[2][:,self.hierarchyLevel].to(self.device)
+                b_labels = batch[2][:,self.hierarchyLevel]#.to(self.device)
                 
                 # Need to exclude the datapoints that are not labeled i.e. 
                 # have a label of 0
-                b_input_ids = batch[0][b_labels!=0,:].to(self.device)
-                b_input_mask = batch[1][b_labels!=0,:].to(self.device)
+                b_input_ids = batch[0][b_labels!=-1,:].to(self.device)
+                b_input_mask = batch[1][b_labels!=-1,:].to(self.device)
                 # Need to perform a type converion to long
-                b_labels = torch.tensor(b_labels[b_labels!=0],dtype=torch.long).to(self.device)
+                b_labels = torch.tensor(b_labels[b_labels!=-1],dtype=torch.long).to(self.device)
                 
                 # Need to one-hot encode the labels
                 #b_labels = torch.nn.functional.one_hot(b_labels, num_classes=self.num_labels)#.unsqueeze(1)
@@ -242,14 +243,14 @@ class BSC:
             for batch in self.dataloaders["val"]:
                 
                 # `batch` contains three pytorch tensors: [0]: input ids, [1]: attention masks, [2]: labels
-                b_labels = batch[2][:,self.hierarchyLevel].to(self.device)
+                b_labels = batch[2][:,self.hierarchyLevel]#.to(self.device)
                 
                 # Need to exclude the datapoints that are not labeled i.e. 
                 # have a label of 0
-                b_input_ids = batch[0][b_labels!=0,:].to(self.device)
-                b_input_mask = batch[1][b_labels!=0,:].to(self.device)
+                b_input_ids = batch[0][b_labels!=-1,:].to(self.device)
+                b_input_mask = batch[1][b_labels!=-1,:].to(self.device)
                 # Need to perform a type converion to long
-                b_labels = torch.tensor(b_labels[b_labels!=0],dtype=torch.long).to(self.device)
+                b_labels = torch.tensor(b_labels[b_labels!=-1],dtype=torch.long).to(self.device)
                 
                 # Need to one-hot encode the labels
                 # b_labels = torch.nn.functional.one_hot(b_labels, num_classes=self.num_labels)
@@ -300,6 +301,15 @@ class BSC:
 
         print("")
         print("Training complete!")
+        
+    def saveTrainingResults(self, hierarchyLevel:int=0, PATH:str=os.path.join("HierarchicalBERT","trainingResults")):
+        counter = 0
+        pathAndName = os.path.join(PATH, f"trainingResultsHierarchy{hierarchyLevel}Run{counter}.json")
+        while os.path.exists(pathAndName):
+            counter += 1
+            pathAndName = os.path.join(PATH, f"trainingResultsHierarchy{hierarchyLevel}Run{counter}.json")
+        with open(pathAndName, "w") as f:
+            json.dump(self.trainingStats, f)
 
     def getTrainingStats(self):
         df_stats = pd.DataFrame(data=self.trainingStats)
@@ -355,7 +365,7 @@ class BSC:
             :tokenizerModel: name of the tokenizer model to use
         :RETRUN: array with the predictions
         """
-        tokenization(df, tokenizerModel = tokenizerModel)
+        # tokenization(df, tokenizerModel = tokenizerModel)
         dataloader = convertDataframetoDataloader(df, includeLabels=True, batch_size=batch_size)
         
         predictions = []

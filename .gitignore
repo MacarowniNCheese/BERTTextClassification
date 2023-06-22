@@ -1,2 +1,3 @@
 HierarchicalBERT/checkpoints/
+HierarchicalBERT/trainingResults/
 BlurbDataset/*.pt

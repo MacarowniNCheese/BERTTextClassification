@@ -84,6 +84,8 @@ def tokenization(
         nbrExamples = len(df["body"])
         
     progress_bar = tqdm(total=nbrExamples, desc="Tokenization")
+    
+    tokenizer = loadTokenizer(tokenizerModel)
 
     # Tokenization
     for i in range(0,nbrExamples):
@@ -94,7 +96,7 @@ def tokenization(
         #   (4) Map tokens to their IDs.
         #   (5) Pad or truncate the text to `max_length`.
         #   (6) Create attention masks for [PAD] tokens.
-        encoded_dict = loadTokenizer(tokenizerModel).encode_plus(
+        encoded_dict = tokenizer.encode_plus(
                             df["body"][i],                  # text to encode.
                             add_special_tokens = True,      # Add '[CLS]' and '[SEP]'
                             max_length = MAX_LENGTH,        # Pad & truncate all textInputs.
