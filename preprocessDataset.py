@@ -1,9 +1,9 @@
-from BlurbDataset.BlurbDataset import BlurbDataset
+from blurb_dataset.blurb_dataset import BlurbDataset
 
 
 if __name__=="__main__":
     # parameters
-    earlyStop = 1e50
+    earlyStop = 20
     batch_size = 16
     epochs = 3
     hierarchyLevel = 0
