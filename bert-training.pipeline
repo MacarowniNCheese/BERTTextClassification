@@ -1,0 +1,218 @@
+{
+  "doc_type": "pipeline",
+  "version": "3.0",
+  "json_schema": "http://api.dataplatform.ibm.com/schemas/common-pipeline/pipeline-flow/pipeline-flow-v3-schema.json",
+  "id": "elyra-auto-generated-pipeline",
+  "primary_pipeline": "primary",
+  "pipelines": [
+    {
+      "id": "primary",
+      "nodes": [
+        {
+          "id": "31e12e2f-83e7-46b3-be6e-98accb20ef31",
+          "type": "execution_node",
+          "op": "execute-python-node",
+          "app_data": {
+            "component_parameters": {
+              "dependencies": [
+                "blurb_dataset/*",
+                "utils/*"
+              ],
+              "include_subdirectories": true,
+              "outputs": [],
+              "node_configuration": [],
+              "filename": "preprocessDataset.py",
+              "env_vars": [],
+              "gpu": 1
+            },
+            "label": "",
+            "ui_data": {
+              "label": "preprocessDataset.py",
+              "image": "/user/yhuang/static/elyra/python.svg",
+              "x_pos": 205,
+              "y_pos": 273,
+              "description": "Run Python script"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              }
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "da0103d6-cf18-4812-aeda-7f137a790dc0",
+          "type": "execution_node",
+          "op": "execute-python-node",
+          "app_data": {
+            "component_parameters": {
+              "dependencies": [
+                "blurb_dataset/*",
+                "HierarchicalBERT/*",
+                "utils/*"
+              ],
+              "include_subdirectories": true,
+              "outputs": [],
+              "node_configuration": [],
+              "filename": "trainBERT.py",
+              "env_vars": [],
+              "gpu": 1
+            },
+            "label": "",
+            "ui_data": {
+              "label": "trainBERT.py",
+              "image": "/user/yhuang/static/elyra/python.svg",
+              "x_pos": 475,
+              "y_pos": 446,
+              "description": "Run Python script"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              },
+              "links": [
+                {
+                  "id": "39ce5325-6e30-449b-90af-faaff8b9ec38",
+                  "node_id_ref": "31e12e2f-83e7-46b3-be6e-98accb20ef31",
+                  "port_id_ref": "outPort"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "9e2329dd-2e3f-447c-8c0d-64b56f570c2f",
+          "type": "execution_node",
+          "op": "execute-python-node",
+          "app_data": {
+            "component_parameters": {
+              "dependencies": [
+                "blurb_dataset/*",
+                "HierarchicalBERT/*",
+                "utils/*"
+              ],
+              "include_subdirectories": true,
+              "outputs": [],
+              "node_configuration": [],
+              "filename": "inferBERT.py",
+              "env_vars": [],
+              "gpu": 1
+            },
+            "label": "",
+            "ui_data": {
+              "label": "inferBERT.py",
+              "image": "/user/yhuang/static/elyra/python.svg",
+              "x_pos": 710,
+              "y_pos": 351,
+              "description": "Run Python script"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              },
+              "links": [
+                {
+                  "id": "8035af8b-ffed-4129-9138-94b1252a0bb1",
+                  "node_id_ref": "da0103d6-cf18-4812-aeda-7f137a790dc0",
+                  "port_id_ref": "outPort"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "app_data": {
+        "ui_data": {
+          "comments": []
+        },
+        "version": 8,
+        "runtime_type": "IDOML",
+        "properties": {
+          "name": "bert-training",
+          "runtime": "IDOML (Apache Airflow)",
+          "pipeline_defaults": {
+            "env_vars": [],
+            "default_args_dict": [],
+            "default_args_queue": {
+              "queue": "precision-worker"
+            },
+            "dag_configuration": [],
+            "runtime_image": "sntyulin/bert-classification:latest"
+          },
+          "pipeline_parameters": []
+        }
+      },
+      "runtime_ref": ""
+    }
+  ],
+  "schemas": []
+}

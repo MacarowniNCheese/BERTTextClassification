@@ -24,7 +24,7 @@
             "label": "",
             "ui_data": {
               "label": "preprocess_data.ipynb",
-              "image": "/user/lstebens/static/elyra/notebook.svg",
+              "image": "/user/yhuang/static/elyra/notebook.svg",
               "x_pos": 90,
               "y_pos": 337,
               "description": "Run notebook file"
@@ -75,7 +75,7 @@
             "label": "",
             "ui_data": {
               "label": "feature_engineering.ipynb",
-              "image": "/user/lstebens/static/elyra/notebook.svg",
+              "image": "/user/yhuang/static/elyra/notebook.svg",
               "x_pos": 316,
               "y_pos": 311,
               "description": "Run notebook file"
@@ -130,12 +130,12 @@
           "pipeline_parameters": [],
           "pipeline_defaults": {
             "env_vars": [],
-            "default_args_dict": [],
             "dag_configuration": [],
+            "default_args_dict": [],
             "default_args_queue": {
               "queue": "precision-worker"
             },
-            "runtime_image": "lucstebens/bert_text_classification"
+            "runtime_image": "sntyulin/bert-classification:latest"
           }
         }
       },

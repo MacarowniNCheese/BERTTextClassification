@@ -1,14 +1,29 @@
 from HierarchicalBERT.BERTSentenceClassification import BSC
-from BlurbDataset.BlurbDataset import BlurbDataset
+from blurb_dataset.blurb_dataset import BlurbDataset
 import os
 import pandas as pd
 from utils.utils import tokenization
+import boto3
+
+AWS_ACCESS_KEY_ID = "KCSHSRMJAUGINEW97PRT"
+AWS_SECRET_ACCESS_KEY = "JHr+Diuzk7gain4oXqz2Pbl4YuKw6mZmac3EwtlV"
+s3 = boto3.resource('s3',
+    endpoint_url='http://10.240.5.123:9099',
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    aws_session_token=None,
+    config=boto3.session.Config(signature_version='s3v4'),
+    verify=False
+)
+bucket_name = "idoml" # define your bucket name
+
 
 if __name__=="__main__":
     # Initialize parameters
-    nbrHierachiesTrain = 3
+    nbrHierachiesTrain = 1
     listModels = []
     PATH = os.path.join("HierarchicalBERT", "checkpoints")
+
     
     # Load dataset to get listLabelDict TODO: Save listLabelDict in model as well 
     data = BlurbDataset(earlyStop=20, batch_size=16,
@@ -19,6 +34,8 @@ if __name__=="__main__":
     
     # Load models
     for hierarchyLevel in range(nbrHierachiesTrain):
+        model_path = os.path.join("HierarchicalBERT","checkpoints", f"BERTonBLURBHierarchyLevel{hierarchyLevel}.pt")
+        s3.Bucket(bucket_name).download_file(model_path, model_path)
         listModels.append(BSC(
             finetunedModel = True,
             finetunedModelName = f"BERTonBLURBHierarchyLevel{hierarchyLevel}.pt",

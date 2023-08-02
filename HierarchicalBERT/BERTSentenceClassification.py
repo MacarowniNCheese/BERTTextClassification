@@ -304,6 +304,8 @@ class BSC:
         
     def saveTrainingResults(self, hierarchyLevel:int=0, PATH:str=os.path.join("HierarchicalBERT","trainingResults")):
         counter = 0
+        if not os.path.exists(PATH):
+            os.makedirs(PATH)
         pathAndName = os.path.join(PATH, f"trainingResultsHierarchy{hierarchyLevel}Run{counter}.json")
         while os.path.exists(pathAndName):
             counter += 1
