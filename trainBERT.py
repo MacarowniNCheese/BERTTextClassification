@@ -15,8 +15,8 @@ if __name__=="__main__":
     epochs = 3
 
     # Parameter Initialization
-    AWS_ACCESS_KEY_ID = "KCSHSRMJAUGINEW97PRT"
-    AWS_SECRET_ACCESS_KEY = "JHr+Diuzk7gain4oXqz2Pbl4YuKw6mZmac3EwtlV"
+    AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
     earlyStop = 1e50 # need to enter this to specify which version of preprocessed datasets should be accessed
     s3 = boto3.resource('s3',
         endpoint_url='http://10.240.5.123:9099',
@@ -82,18 +82,20 @@ if __name__=="__main__":
         listModels[-1].train()
         listModels[-1].saveModel(f"BERTonBLURBHierarchyLevel{hierarchyLevel}.pt")
         predictions = listModels[-1].test()
-        listModels[-1].saveTrainingResults(hierarchyLevel=hierarchyLevel)
         
         
 
-        model_path = os.path.join("HierarchicalBERT","checkpoints", f"BERTonBLURBHierarchyLevel{hierarchyLevel}.pt")
+        model_path = os.path.join("HierarchicalBERT","checkpoints", f"BERTonBLURBHierarchyLevel{hierarchyLevel}.pt", "pytorch_model.bin")
         s3.Bucket(bucket_name).upload_file(model_path, minio_path + model_path)
+        
+        model_path = os.path.join("HierarchicalBERT","checkpoints", f"BERTonBLURBHierarchyLevel{hierarchyLevel}.pt", "config.json")
+        s3.Bucket(bucket_name).upload_file(model_path, minio_path + model_path)
+        
+        
+        listModels[-1].saveTrainingResults(hierarchyLevel=hierarchyLevel)
         
         res_path = os.path.join("HierarchicalBERT","trainingResults")
         counter = 0
         pathAndName = os.path.join(res_path, f"trainingResultsHierarchy{hierarchyLevel}Run{counter}.json")
-        while os.path.exists(pathAndName):
-            pathAndName = os.path.join(res_path, f"trainingResultsHierarchy{hierarchyLevel}Run{counter}.json")
-            counter += 1
 
         s3.Bucket(bucket_name).upload_file(pathAndName, minio_path + pathAndName)

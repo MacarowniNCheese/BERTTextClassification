@@ -5,7 +5,7 @@ import os
 
 if __name__=="__main__":
     # parameters
-    earlyStop = 20
+    earlyStop = 1e50
     batch_size = 16
     epochs = 3
     hierarchyLevel = 0
@@ -16,8 +16,8 @@ if __name__=="__main__":
     data.saveData()
     
     # Save to Minio
-    AWS_ACCESS_KEY_ID = "KCSHSRMJAUGINEW97PRT"
-    AWS_SECRET_ACCESS_KEY = "JHr+Diuzk7gain4oXqz2Pbl4YuKw6mZmac3EwtlV"
+    AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 
     def generateFileNames():
         """ 

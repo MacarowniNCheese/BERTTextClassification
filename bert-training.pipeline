@@ -206,7 +206,7 @@
               "queue": "precision-worker"
             },
             "dag_configuration": [],
-            "runtime_image": "sntyulin/bert-classification:latest"
+            "runtime_image": "sntyulin/bert-classification:cuda11.1-cudnn8-runtime"
           },
           "pipeline_parameters": []
         }
