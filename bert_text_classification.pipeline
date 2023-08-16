@@ -1,0 +1,146 @@
+{
+  "doc_type": "pipeline",
+  "version": "3.0",
+  "json_schema": "http://api.dataplatform.ibm.com/schemas/common-pipeline/pipeline-flow/pipeline-flow-v3-schema.json",
+  "id": "elyra-auto-generated-pipeline",
+  "primary_pipeline": "primary",
+  "pipelines": [
+    {
+      "id": "primary",
+      "nodes": [
+        {
+          "id": "daed907d-0be6-46ea-ace4-50393a513333",
+          "type": "execution_node",
+          "op": "execute-notebook-node",
+          "app_data": {
+            "component_parameters": {
+              "dependencies": [],
+              "include_subdirectories": false,
+              "outputs": [],
+              "node_configuration": [],
+              "filename": "preprocess_data.ipynb",
+              "env_vars": []
+            },
+            "label": "",
+            "ui_data": {
+              "label": "preprocess_data.ipynb",
+              "image": "/user/yhuang/static/elyra/notebook.svg",
+              "x_pos": 90,
+              "y_pos": 337,
+              "description": "Run notebook file"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              }
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "7c3b4535-989b-4c5e-afba-9cb664bbb654",
+          "type": "execution_node",
+          "op": "execute-notebook-node",
+          "app_data": {
+            "component_parameters": {
+              "dependencies": [],
+              "include_subdirectories": false,
+              "outputs": [],
+              "node_configuration": [],
+              "filename": "feature_engineering.ipynb",
+              "env_vars": []
+            },
+            "label": "",
+            "ui_data": {
+              "label": "feature_engineering.ipynb",
+              "image": "/user/yhuang/static/elyra/notebook.svg",
+              "x_pos": 316,
+              "y_pos": 311,
+              "description": "Run notebook file"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              },
+              "links": [
+                {
+                  "id": "c8b8a42f-6a27-4167-a3ed-1ed63219cddc",
+                  "node_id_ref": "daed907d-0be6-46ea-ace4-50393a513333",
+                  "port_id_ref": "outPort"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "app_data": {
+        "ui_data": {
+          "comments": []
+        },
+        "version": 8,
+        "runtime_type": "IDOML",
+        "properties": {
+          "name": "bert_text_classification",
+          "runtime": "IDOML (Apache Airflow)",
+          "pipeline_parameters": [],
+          "pipeline_defaults": {
+            "env_vars": [],
+            "dag_configuration": [],
+            "default_args_dict": [],
+            "default_args_queue": {
+              "queue": "precision-worker"
+            },
+            "runtime_image": "sntyulin/bert-classification:latest"
+          }
+        }
+      },
+      "runtime_ref": ""
+    }
+  ],
+  "schemas": []
+}

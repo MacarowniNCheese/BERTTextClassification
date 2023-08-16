@@ -18,7 +18,7 @@ class BlurbDataset:
     def __init__(
             self, 
             earlyStop:int=1e50, 
-            batch_size:int=8, 
+            batch_size:int=16, 
             tokenizerModel:str="bert-base-uncased",
             tokenizedDataPath:str=""
         ):
@@ -45,13 +45,13 @@ class BlurbDataset:
         
     def saveData(self) -> None:
         """
-        Method saves the train, val and test tensordatasets as well as the listLabelDict 
+        Method saves the train, val and test tensordatasets locally as well as the listLabelDict 
         as json file
         """
         if self.isPreprocessed == False:
             print("Data not preprocessed yet. Please preprocess data first.")
         else: 
-            PATH = "BlurbDataset"
+            PATH = "blurb_dataset"
             appendix = ""
             if self.earlyStop != 1e50:
                 appendix = f"EarlyStop{self.earlyStop}"
@@ -67,8 +67,8 @@ class BlurbDataset:
      
     def loadData(self, PATH:str="BlurbDataset") -> Tuple[Dict, Dict]:
         """
-        Method loads the train, val and test files as csv files as well as the listLabelDict
-        for a given value of self.earlyStop
+        Method loads locally stored train, val and test files as *.pt files as well as the listLabelDict
+        Notice that self.earlystop indicates which stored version should be loaded
         """
         appendix = ""
         if self.earlyStop != 1e50:
@@ -299,7 +299,7 @@ class myDataLoader(DataLoader):
         else:
             return self.tensorDataset[index*self.batch_size:(index+1)*self.batch_size]
 
-def loadBlurbDataset(file_name:str="BlurbGenreCollection_EN_train.txt", path:str="./BlurbDataset/") -> pd.DataFrame: 
+def loadBlurbDataset(file_name:str="BlurbGenreCollection_EN_train.txt", path:str="blurb_dataset") -> pd.DataFrame: 
     """
     Extracts the infromation of one .txt files and returns a pandas Dataframe
     :Args:
@@ -360,9 +360,10 @@ def loadBlurbData() -> tuple:
     Returns:
         tuple containing train, test and validation as pandas.DataFrame
     """
-    trainSet = loadBlurbDataset("BlurbGenreCollection_EN_train.txt")
-    testSet = loadBlurbDataset("BlurbGenreCollection_EN_test.txt")
-    valSet = loadBlurbDataset("BlurbGenreCollection_EN_dev.txt")
+    PATH = "blurb_dataset"
+    trainSet = loadBlurbDataset(file_name="BlurbGenreCollection_EN_train.txt")
+    testSet = loadBlurbDataset(file_name="BlurbGenreCollection_EN_test.txt")
+    valSet = loadBlurbDataset(file_name="BlurbGenreCollection_EN_dev.txt")
     return (trainSet, testSet, valSet)
     
 def saveBlurbCSV(file_name:str,dataframe:pd.DataFrame,path:str="BlurbDataset") -> None:
